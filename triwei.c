@@ -4,7 +4,8 @@
 001 为楷书 
 010 为隶书 
 011 为行书
-100	为篆书*/ 
+100	为篆书
+*/ 
 
 
 #include <stdio.h>
@@ -57,6 +58,8 @@ void readData(){													//读取训练样本
 		for (i=0;i<216;i++) {
 			fscanf(fp,"%lf",&d_in[Data][i]);
  		}
+		if (fp==NULL) printf("%s\n",files.name); 
+
  		Data++;
  		fclose(fp);
  	}while(0==_findnext(File_Handle,&files));		
@@ -136,9 +139,8 @@ void  trainNetwork(){												//训练神经网络
 //			printf("%d  %d   %d\n\n\n",d_out[i][0],d_out[i][1],d_out[i][2]);
 		}
 		c++;
-		//printf("%f\n",e);
-
-	}while(c<TrainC && 1.0*e/Data>0.01);
+		printf("第%d次训练网络，误差精度为：%f\n",c,1.0*e/Data);
+	}while(c<TrainC && 1.0*e/Data>0.001);
 	printf("训练神经网络完毕，读取测试样本\n");
 }
 
@@ -175,8 +177,11 @@ void testNetwork(){
 	 for (i=0;i<Data;i++) {
 	 	comput(i);
 	 	check=1;
-		for (j = 0; j < Out; ++j)
-			if (OutputData[j]!=d_out[i][j]) check=0;
+		 	 for (j = 0; j < Out; ++j){
+				if (OutputData[j]!=d_out[i][j]) check=0;
+			 	printf("%d  ",OutputData[j]);
+			 }
+			 printf("\n"); 
 		if (check!=1) e++;	
 	 }
 	 printf("测试完成，共测试%d个样本，错误%d个，错误率%f。\n",Data,e,1.0*e/Data);
