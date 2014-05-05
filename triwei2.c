@@ -136,58 +136,75 @@ void  trainNetwork(){												//训练神经网络
 //			printf("%d  %d   %d\n\n\n",d_out[i][0],d_out[i][1],d_out[i][2]);
 		}
 		c++;
-		//printf("%f\n",e);
-
+		printf("第%d次训练网络，误差精度为：%f\n",c,1.0*e/Data);
 	}while(c<TrainC && 1.0*e/Data>0.001);
 	printf("训练神经网络完毕，读取测试样本\n");
 }
 
+void mycpy(char *x,char *y){   //字符串复制，库函数有点问题。。
+	int i;
+	for (i=0;y[i]!='\0';i++){
+		x[i]=y[i];
+	}	 
+	x[i]=y[i];
+}
 void testNetwork(){
 	struct _finddata_t files;
  	int File_Handle;
-	char test[10];
+ 	int right=0,i,j,check;
+	char test[100],tem[100],log[100];
 	printf("请输入您想测试的字体 \n");
 	scanf("%s",test);
+	strcat(test," test/");
 	printf("\n");
+	
 	while (test[0]!='0'){
-		strcat(test," test/*.txt");
+		tem[0]='\0'; 
+		mycpy(tem,test);
+		strcat(test,"*.txt");
 		File_Handle = _findfirst(test,&files);
 		if(File_Handle==-1) {
 			 printf("文件目录不存在\n\n");
+			 printf("请输入您想测试的字体 \n");
+		   	 printf("请输入您想测试的字体 \n");
+			 scanf("%s",test);
+			 strcat(test," test/");
+			 printf("\n");
 			 continue ;	
   		}	
   		Data = 0; 
   		e = 0;
  		do{
+ 			mycpy(log,tem);
 			FILE *fp ;
 			if	(files.name[0]=='c') {d_out[Data][0] = 0;d_out[Data][1] = 0;d_out[Data][2] = 0;} 
 			if	(files.name[0]=='k') {d_out[Data][0] = 0;d_out[Data][1] = 0;d_out[Data][2] = 1;} 
 			if	(files.name[0]=='l') {d_out[Data][0] = 0;d_out[Data][1] = 1;d_out[Data][2] = 0;} 
 			if	(files.name[0]=='x') {d_out[Data][0] = 0;d_out[Data][1] = 1;d_out[Data][2] = 1;} 
-			if	(files.name[0]=='z') {d_out[Data][0] = 1;d_out[Data][1] = 0;d_out[Data][2] = 0;} 		
-			fp=fopen(files.name,"r");
-			int i;
+			if	(files.name[0]=='z') {d_out[Data][0] = 1;d_out[Data][1] = 0;d_out[Data][2] = 0;} 
+			strcat(log,files.name);
+			fp=fopen(log,"r");
 			for (i=0;i<216;i++)	fscanf(fp,"%lf",&d_in[Data][i]);
  			Data++;
+ 			if (fp==NULL) printf("文件读取失败\n"); 
 			fclose(fp);
  		}while(0==_findnext(File_Handle,&files));	
- 		
 		 Data--;	
 		 _findclose(File_Handle);
-		 
-		 printf("读取%d个测试样本\n",Data); 
-		 int right=0,i,j,check;
+		 printf("读取%d个测试样本\n",Data);
+
 		 for (i=0;i<Data;i++) {
-	 	comput(i);
-	 	check=1;
-		for (j = 0; j < Out; ++j)
-			if (OutputData[j]!=d_out[i][j]) check=0;
-		if (check!=1) e++;	
+	 		 comput(i);
+	 		 check=1;
+		 	 for (j = 0; j < Out; ++j)	if (OutputData[j]!=d_out[i][j]) check=0;
+	 	 	 if (check!=1) e++;	
 		 }
-		printf("测试完成，共测试%d个样本，错误%d个，错误率%f。\n\n\n\n",Data,e,1.0*e/Data);
-		printf("请输入您想测试的字体 \n");
-	 	scanf("%s",test);
-	 	printf("\n");
+		 printf("测试完成，共测试%d个样本，错误%d个，错误率%f。\n\n",Data,e,1.0*e/Data);
+		 printf("请输入您想测试的字体 \n");
+		 scanf("%s",test);
+		 strcat(test," test/");
+		 printf("\n");
+		 continue ;	
 	}
 }
 
